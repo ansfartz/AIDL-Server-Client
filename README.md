@@ -25,7 +25,7 @@ Now, after rebuilding the project, you should have in the Android project struct
 Create a new class extending Service, we'll call it MathService. It will have to override the public IBinder ```onBind(Intent intent)``` method, which returns an IBinder object, through which clients can call on to the service.
 
 We'll have to declare the IBinder object however, before returning it in the onBind method.
-```
+```java
 private MathManagerImpl mathManagerImpl = new MathManagerImpl();
 
 private class MathManagerImpl extends IMathManager.Stub {
@@ -48,7 +48,7 @@ _``` IMathManager mathManager = new IMathManager.Stub() { ... } ```_
 The IMathManager.Stub class extends the Binder object and implements the IMathManager interface, which means that this is where we are going to define our methods, and that this is what the client is going to receive from the onBind method.
 
 All that is left now is to return our ```mathManagerImpl``` object in the onBind method:
-```
+```java
     @Override
     public IBinder onBind(Intent intent) {
         return mathManagerImpl;
