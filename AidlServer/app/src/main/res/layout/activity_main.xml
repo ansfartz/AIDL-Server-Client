@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_marginTop="100dp"
+        android:id="@+id/linearLayoutNumbers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_centerHorizontal="true">
+
+
+        <EditText
+            android:inputType="number"
+            android:layout_marginEnd="20dp"
+            android:id="@+id/nr1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="value1"
+            android:textSize="30sp" />
+
+        <EditText
+            android:inputType="number"
+            android:id="@+id/nr2"
+            android:layout_marginStart="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="value2"
+            android:textSize="30sp" />
+
+    </LinearLayout>
+
+    <Button
+        android:layout_marginTop="10dp"
+        android:id="@+id/addBtn"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/linearLayoutNumbers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ADD"
+        />
+
+    <Button
+        android:id="@+id/minusBtn"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/addBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="MINUS"
+        />
+
+    <LinearLayout
+        android:layout_marginTop="100dp"
+        android:id="@+id/resultLL"
+        android:layout_below="@id/minusBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_centerHorizontal="true">
+
+
+        <TextView
+            android:layout_marginEnd="10dp"
+            android:id="@+id/resultTVstatic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Result: "
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/resultTV"
+            android:layout_marginStart="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="..."
+            android:textSize="30sp" />
+
+    </LinearLayout>
+
+</RelativeLayout>
