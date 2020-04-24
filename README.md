@@ -11,7 +11,7 @@ We'll start with the AidlServer.
 ## 1.  The aidl file
 
 In the _project_ structure of your current project, go to **app/src/main**, Right Click on **main** > New > AIDL > AIDL File.  Create the IMathManager.aidl file and its methods. The aidl file will generate the required interface that both the client application and the server will be using.
-```aidl
+```java
 interface IMathManager {
     int add(in int x, in int y);
     int substract(in int x, in int y);
