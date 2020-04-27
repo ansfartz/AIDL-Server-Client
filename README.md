@@ -61,7 +61,7 @@ All that is left now is to return our ```mathManagerImpl``` object in the onBind
 ## 2.  Adding it to the AndroidManifest.xml
 
 ```xml
-        <appication...>
+    <application...>
         
         ....
 
@@ -78,12 +78,57 @@ All that is left now is to return our ```mathManagerImpl``` object in the onBind
         </service>
 
         ...
-        </application>        
+    </application>        
 ```
 
 
 
 # The AidlClient.
 ## 1.  The aidl file
+
+The aidl file must be the same one, and it must have the same package name as the one on the server ( ```com.asfartz.aidlserver``` )
+
+## 2. Creating a ServiceConnection object
+
+A ServiceConnection is an interface with 2 methods: ```onServiceConnected(ComponentName name, IBinder service)``` and ```onServiceDisconnected(ComponentName name)```. We'll be focusing on the first method, since we'll be using the IBinder parameter to initialize our IMathManager interface, which the client will be using for making calls to the server's MathService.
+
+```java
+private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mathManager = IMathManager.Stub.asInterface(service);
+            Toast.makeText(MainActivity.this, "BOUND", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+```
+
+## 3. Binding to the Service
+
+We must use an explicit Intent, and pass the component name to it, as such:
+```java
+    Intent intent = convertImplicitIntentToExplicitIntent(new Intent("com.asfartz.service.AIDL"));
+    bindService(intent, serviceConnection, BIND_AUTO_CREATE);
+```
+```java
+public Intent convertImplicitIntentToExplicitIntent(Intent implicitIntent) {
+        PackageManager pm = getPackageManager();
+        List<ResolveInfo> resolveInfoList = pm.queryIntentServices(implicitIntent, 0);
+        if (resolveInfoList == null || resolveInfoList.size() != 1) {
+            return null;
+        }
+
+        ResolveInfo serviceInfo = resolveInfoList.get(0);
+        ComponentName component = new ComponentName(serviceInfo.serviceInfo.packageName, serviceInfo.serviceInfo.name);
+        Intent explicitIntent = new Intent(implicitIntent);
+        explicitIntent.setComponent(component);
+        return explicitIntent;
+    }
+```
+
 
 
