@@ -7,7 +7,7 @@ Scenario: There are 2 applications, the server app and the client app. We'll cal
 
 ___
 
-We'll start with the AidlServer.
+# We'll start with the AidlServer.
 ## 1.  The aidl file
 
 In the _project_ structure of your current project, go to **app/src/main**, Right Click on **main** > New > AIDL > AIDL File.  Create the IMathManager.aidl file and its methods. The aidl file will generate the required interface that both the client application and the server will be using.
@@ -57,4 +57,33 @@ All that is left now is to return our ```mathManagerImpl``` object in the onBind
         return mathManagerImpl;
     }
 ```
+
+## 2.  Adding it to the AndroidManifest.xml
+
+```xml
+        <appication...>
+        
+        ....
+
+        <service
+            android:name="com.asfartz.aidlserver.MathService"
+            android:enabled="true"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="com.asfartz.service.AIDL"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+
+        </service>
+
+        ...
+        </application>        
+```
+
+
+
+# The AidlClient.
+## 1.  The aidl file
+
 
