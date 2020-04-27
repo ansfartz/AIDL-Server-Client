@@ -41,11 +41,12 @@ private class MathManagerImpl extends IMathManager.Stub {
     }
 }
 ```
-##### Note: creating a class that extends IMathManager.Stub is optional, you could just create an annonymous implementation like this:
+_Note: creating a class that extends IMathManager.Stub is optional. You could just create an annonymous implementation like this:_
 _``` IMathManager mathManager = new IMathManager.Stub() { ... } ```_
+_ Creating a class that extends our Stub however means that we can add additional variables and methods to it, private to it._
 
 
-The IMathManager.Stub class extends the Binder object and implements the IMathManager interface, which means that this is where we are going to define our methods, and that this is what the client is going to receive from the onBind method.
+The IMathManager.Stub class extends the Binder object and implements our .aidl file, the IMathManager interface, which means that this is where we are going to define our methods, and that this is what the client is going to receive from the onBind method.
 
 All that is left now is to return our ```mathManagerImpl``` object in the onBind method:
 ```java
