@@ -7,8 +7,8 @@ Scenario: There are 2 applications, the server app and the client app. We'll cal
 
 ___
 
-# We'll start with the AidlServer.
-### 1.  The aidl file
+# The AidlServer
+### 1.  The .aidl file
 
 In the _project_ structure of your current project, go to **app/src/main**, Right Click on **main** > New > AIDL > AIDL File.  Create the IMathManager.aidl file and its methods. The aidl file will generate the required interface that both the client application and the server will be using.
 ```java
@@ -84,6 +84,8 @@ All that is left now is to return our ```mathManagerImpl``` object in the onBind
 **Implicit intent** = specifies an action that can invoke any app on the device able to perform the action.  
 **Explicit intent** = used to launch a specific app component, such as a particular activity or service in your app.  
 We are doing this because we're going to need the component name ( ```android:name``` in intent-filter ) to identify the service in the Client app, and pass it to the explicit intent.
+
+*Note: If there are multiple Services with matching ```intent-filter```s, the Android framework will choose the one with highest priority. If multiple Services have highest priority, then a random one will be picked.* In our case, we should make sure no other services on the device have this ```intent-filter``` name.
 
 
 
