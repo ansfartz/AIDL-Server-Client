@@ -71,7 +71,7 @@ All that is left now is to return our ```mathManagerImpl``` object in the onBind
             android:exported="true">
 
             <intent-filter>
-                <action android:name="com.asfartz.service.AIDL"/>
+                <action android:name="com.asfartz.service.MYSERVICE"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
 
@@ -80,10 +80,12 @@ All that is left now is to return our ```mathManagerImpl``` object in the onBind
         ...
     </application>        
 ```
+##### source: https://developer.android.com/guide/components/intents-filters#Types
 
 
 
-# The AidlClient.
+
+# The AidlClient
 ## 1.  The aidl file
 
 The aidl file must be the same one, and it must have the same package name as the one on the server ( ```com.asfartz.aidlserver``` )
@@ -111,11 +113,11 @@ private ServiceConnection serviceConnection = new ServiceConnection() {
 
 We must use an explicit Intent, and pass the component name to it, as such:
 ```java
-    Intent intent = convertImplicitIntentToExplicitIntent(new Intent("com.asfartz.service.AIDL"));
+    Intent intent = ```toExplicitIntent``` method will cause an (new Intent("com.asfartz.service.MYSERVICE"));
     bindService(intent, serviceConnection, BIND_AUTO_CREATE);
 ```
 ```java
-public Intent convertImplicitIntentToExplicitIntent(Intent implicitIntent) {
+public Intent toExplicitIntent(Intent implicitIntent) {
         PackageManager pm = getPackageManager();
         List<ResolveInfo> resolveInfoList = pm.queryIntentServices(implicitIntent, 0);
         if (resolveInfoList == null || resolveInfoList.size() != 1) {
@@ -129,6 +131,8 @@ public Intent convertImplicitIntentToExplicitIntent(Intent implicitIntent) {
         return explicitIntent;
     }
 ```
+
+Omitting the ```toExplicitIntent``` method will cause an ```IllegalArgumentException: Service Intent must be explicit```
 
 
 
