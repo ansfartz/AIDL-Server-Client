@@ -81,6 +81,9 @@ All that is left now is to return our ```mathManagerImpl``` object in the onBind
     </application>        
 ```
 ##### source: https://developer.android.com/guide/components/intents-filters#Types
+**Implicit intent** = specifies an action that can invoke any app on the device able to perform the action.  
+**Explicit intent** = used to launch a specific app component, such as a particular activity or service in your app.  
+We are doing this because we're going to need the component name ( ```android:name``` in intent-filter ) to identify the service in the Client app.
 
 
 
@@ -132,7 +135,7 @@ public Intent toExplicitIntent(Intent implicitIntent) {
     }
 ```
 
-Omitting the ```toExplicitIntent``` method will cause an ```IllegalArgumentException: Service Intent must be explicit```
+Omitting the ```toExplicitIntent(Intent implicitIntent)``` method will cause an ```IllegalArgumentException```, because the  serviceIntent argument of bindService must be an explicit IntentI
 
 
 
