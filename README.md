@@ -141,3 +141,6 @@ Omitting the ```toExplicitIntent(Intent implicitIntent)``` method will cause an 
 
 
 
+
+# Running the apps
+The Server app is not mandatory
