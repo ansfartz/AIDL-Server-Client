@@ -8,19 +8,7 @@ import android.util.Log;
 
 public class MyService extends Service {
 
-    /*
-    IMathManager.Stub mBinder = new IMathManager.Stub() {
-        @Override
-        public int add(int x, int y) throws RemoteException {
-            return x + y;
-        }
 
-        @Override
-        public int substract(int x, int y) throws RemoteException {
-            return x - y;
-        }
-    };
-     */
 
     public MyService() {
     }
@@ -50,6 +38,20 @@ public class MyService extends Service {
             return x - y;
         }
     }
+
+        /*
+    IMathManager.Stub mBinder = new IMathManager.Stub() {
+        @Override
+        public int add(int x, int y) throws RemoteException {
+            return x + y;
+        }
+
+        @Override
+        public int substract(int x, int y) throws RemoteException {
+            return x - y;
+        }
+    };
+     */
 
 
 
