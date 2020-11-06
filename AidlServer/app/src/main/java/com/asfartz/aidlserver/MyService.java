@@ -21,6 +21,7 @@ public class MyService extends Service {
                 + " getComponent = " + intent.getComponent()
                 + " getScheme = " + intent.getScheme()
                 + " getDataString = " + intent.getDataString());
+
         return mathManagerImpl;
     }
 
