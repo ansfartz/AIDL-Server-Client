@@ -4,6 +4,11 @@
 
 Scenario: There are 2 applications, the server app and the client app. We'll call them AidlServer and AidlClient. The server app contains a service which can do Math operations, called MathService (or MyService). The client app wants to use the complicated math methods that are implemented in this Service, which is located on the server. This is what we are going to try to do.
 
+> AIDL (Android Interface Definition Language) allows you to define the programming interface that both the client and service agree upon in order to communicate with each other using interprocess communication (IPC)
+
+
+
+
 
 ___
 
