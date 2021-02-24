@@ -123,10 +123,10 @@ private ServiceConnection serviceConnection = new ServiceConnection() {
 
 We must use an explicit Intent, and pass the component name to it, as such:
 ```java
-    Intent intent = ```toExplicitIntent``` method will cause an (new Intent("com.asfartz.service.MYSERVICE"));
+    Intent intent = toExplicitIntent (new Intent("com.asfartz.service.MYSERVICE"));
     bindService(intent, serviceConnection, BIND_AUTO_CREATE);
-```
-```java
+
+
 public Intent toExplicitIntent(Intent implicitIntent) {
         PackageManager pm = getPackageManager();
         List<ResolveInfo> resolveInfoList = pm.queryIntentServices(implicitIntent, 0);
