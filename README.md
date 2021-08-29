@@ -12,7 +12,7 @@ Scenario: There are 2 applications, the server app and the client app. We'll cal
 
 ___
 
-# The AidlServer
+# AIDLServer
 ### 1.  The .aidl file
 
 In the _project_ structure of your current project, go to **app/src/main**, Right Click on **main** > New > AIDL > AIDL File.  Create the IMathManager.aidl file and its methods. The aidl file will generate the required interface that both the client application and the server will be using.
@@ -95,10 +95,10 @@ We are doing this because we're going to need the component name ( ```android:na
 
 
 
-# The AidlClient
-### 1.  The aidl file
+# AIDLClient
+### 1.  The .aidl file
 
-The aidl file must be the same one, and it must have the same package name as the one on the server ( ```com.asfartz.aidlserver``` )
+The .aidl file must be the exact same one, it can't have any modifications. And it must have the same package name as the one on the server (in this case: ```com.asfartz.aidlserver``` )
 
 ### 2. Creating a ServiceConnection object
 
