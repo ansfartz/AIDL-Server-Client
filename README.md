@@ -1,14 +1,14 @@
 # AIDL-Server-Client
 
-##### Source and clarifications: https://developer.android.com/guide/components/aidl
+##### Google Docs: https://developer.android.com/guide/components/aidl
 
-Scenario: There are 2 applications, the server app and the client app. We'll call them AIDLServer and AIDLClient. The server app contains a service which can do Math operations, called MathService (or MyService). What we want to accomplish is: have the client app call the complicated math methods that are defined in the service in the server app.
+Simple Proof-of-Concept ilustrating 2 applications (a server and a client) communicating using IPC (interprocess communication), by using an [AIDL](https://developer.android.com/guide/components/aidl) interface.  
 
-> AIDL (Android Interface Definition Language) allows you to define the programming interface that both the client and service agree upon in order to communicate with each other using interprocess communication (IPC)
-
-
-
-
+Let's assume that the Server App contains some methods which do highly sophisticated calculations. We want the Client App to communicate with the Server App so that it too may call these sophisticated methods. In order for this to happen, these steps need to be followed:   
+   1. Server App - Create an AIDL interface, whose abstract methods will be called by the Client App to communicate with the Server App. This interface needs to be made available to the Client App.
+   2. Server App - Implement the AIDL interface's methods. Essentially whatever methods the Server App wants expose, they should be added in the interface and implemented. 
+   3. Server App - Create a Service for the Client App to bind to. The return value of [onBind(): IBinder?](https://developer.android.com/reference/android/app/Service#onBind(android.content.Intent)) will be the AIDL interface's implementation from step 2.
+   4. Client App - After including the shared AIDL interface, connect to the Server App's service and use the IBinder? from [onServiceConnected(ComponentName?, IBinder?)](https://developer.android.com/reference/android/content/ServiceConnection#onServiceConnected(android.content.ComponentName,%20android.os.IBinder)) to hold a reference to the AIDL interface's remote implementation (returned in step 3).
 
 ___
 
