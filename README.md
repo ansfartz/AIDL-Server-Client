@@ -151,6 +151,8 @@ The .aidl file must have the same package name as the one on the server. Even th
 
 You can switch to `Project View` on the Server App, copy the `aidl` folder and paste it in the same location in the Client App. Or just follow the same steps as before for creating a new AIDL File (`app > New > AIDL > AIDL File`) but remember to rename the package to have the same one as the Server App. You should end up with this:
 
+![File tree showcasing the aidl folder structure](./aidl_file_tree.png)
+
 `ClientApp\app\src\main\aidl\com\ansfartz\serverapp\IMathManager.aidl`
 
 ### 2. Creating a ServiceConnection object
