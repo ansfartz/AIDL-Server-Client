@@ -2,7 +2,11 @@
 
 #### Google Docs: https://developer.android.com/guide/components/aidl
 
-Simple Proof-of-Concept ilustrating 2 applications (a server and a client) communicating using IPC (interprocess communication), by using an [AIDL](https://developer.android.com/guide/components/aidl) interface.  
+Simple Proof-of-Concept ilustrating 2 applications (a server and a client) communicating using IPC -interprocess communication-, by using an [AIDL](https://developer.android.com/guide/components/aidl) interface.   
+
+This is essentially a "Super Basic AIDL For Dummies" project so I can grasp AIDL concepts easier and have a quick reference for whenever needed. It's a super-simplified version of [Defining an AIDL interface](https://developer.android.com/guide/components/aidl#Defining) with less information and more step-by-step instructions. May it hopefully shed some light for other like-minded dummies.
+
+___
 
 Let's assume that the Server App contains some methods which do highly sophisticated calculations. We want the Client App to communicate with the Server App so that it too may call these sophisticated methods. In order for this to happen, these steps need to be followed:   
    1. Server App - Create an AIDL interface, whose abstract methods will be called by the Client App to communicate with the Server App. This interface needs to be made available to the Client App.
@@ -31,80 +35,123 @@ More importantly though, there is the Stub class `public static abstract class S
 - `public IMathManager asInterface(IBinder)` - this will be called by the Client, to cast the IBinder object received in [onServiceConnected(ComponentName?, IBinder?)](https://developer.android.com/reference/android/content/ServiceConnection#onServiceConnected(android.content.ComponentName,%20android.os.IBinder)) to IMathManager.
 - `public boolean onTransact(...)` - overriden from Binder class, this method essentially figures out which methods of IMathManager to call, based on the parameters received via the remote call, in this case from the Client. Explaining how this happens is outside the scope of this PoC.
 
-### 2.  The Service
+### 2. The .aidl file's implementation
 
-Create a new class extending Service, we'll call it MathService. It will have to override the public IBinder ```onBind(Intent intent)``` method, which returns an IBinder object, through which clients can call on to the service.
+Let's create the actual implementation of the IMathManager.aidl file. To do this, we'll have to extend the Stub class (NOTE: notice that Stub extends Binder). This is as simple as implementing a normal interface with the 2 methods `add(int x, int y)` and `substract(int x, int y)`. We'll call it `MathManagerImpl`:
+```kotlin
+package com.ansfartz.serverapp
 
-We'll have to declare the IBinder object however, before returning it in the onBind method.
-```java
-private MathManagerImpl mathManagerImpl = new MathManagerImpl();
+import java.io.IOException
 
-private class MathManagerImpl extends IMathManager.Stub {
+class MathManagerImpl : IMathManager.Stub(){
 
-    @Override
-    public int add(int x, int y) throws RemoteException {
-        return x + y;
+    @Throws(IOException::class)
+    override fun add(a: Int, b: Int): Int {
+        return a + b
     }
 
-    @Override
-    public int substract(int x, int y) throws RemoteException {
-        return x - y;
+    @Throws(IOException::class)
+    override fun substract(a: Int, b: Int): Int {
+        return a - b
     }
 }
 ```
-_Note: creating a class that extends IMathManager.Stub is optional. You could just create an annonymous implementation like this:_
 
-_``` IMathManager mathManager = new IMathManager.Stub() { ... } ```_
+### 3.  The Service which Client Apps can bind to 
 
-_Creating a class that extends our Stub however means that we can add additional variables and methods to it, private to it._
+Create a new class extending Service, we'll call it MathService. Since it's a [Service](https://developer.android.com/reference/android/app/Service) it has to override the method ```IBinder onBind(Intent intent)```. This is where we return the Binder (!) MathManagerImpl.
 
+```kotlin
+package com.ansfartz.serverapp
 
-The IMathManager.Stub class extends the Binder object and implements our .aidl file, the IMathManager interface, which means that this is where we are going to define our methods, and that this is what the client is going to receive from the onBind method.
+import android.app.Service
+import android.content.Intent
+import android.os.IBinder
+import android.util.Log
 
-All that is left now is to return our ```mathManagerImpl``` object in the onBind method:
-```java
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mathManagerImpl;
+class MathService : Service() {
+
+    private val mathManagerImpl = MathManagerImpl()
+
+    override fun onCreate() {
+        Log.d("MathService", "onCreate:")
+        super.onCreate()
     }
+
+    override fun onBind(intent: Intent?): IBinder {
+        Log.d("MathService", "onBind: intent: getPackage = ${intent!!.`package`} " +
+                "getAction = ${intent.action} " +
+                "getData = ${intent.data} " +
+                "getComponent = ${intent.component} " +
+                "getScheme = ${intent.scheme} " +
+                "getDataString = ${intent.dataString}"
+        )
+
+        return mathManagerImpl
+    }
+
+    override fun onDestroy() {
+        Log.d("MathService", "onCreate:")
+        super.onDestroy()
+    }
+}
 ```
 
-### 3.  Adding it to the AndroidManifest.xml
+### 3.1  Add the Service to the AndroidManifest.xml
+
+This is a requirement for any Service. See [Declaring a service in the manifest](https://developer.android.com/guide/components/services#Declaring) for more details. Also declare an intent filter with a unique name to specify the action that the Service will receive / accept. 
 
 ```xml
-    <application...>
-        
-        ....
+<?xml version="1.0" encoding="utf-8"?> 
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.ansfartz.serverapp">
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.ServerApp">
 
         <service
-            android:name="com.asfartz.aidlserver.MathService"
+            android:name="com.ansfartz.serverapp.MathService"
             android:enabled="true"
             android:exported="true">
 
+            <!-- Intent filter, the Client app will use this action in its Intent -->
             <intent-filter>
-                <action android:name="com.asfartz.service.MYSERVICE"/>
+                <action android:name="com.ansfartz.service.AIDL"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
-
         </service>
 
-        ...
-    </application>        
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+       
+    </application>
+
+</manifest>    
 ```
-##### source: https://developer.android.com/guide/components/intents-filters#Types
-**Implicit intent** = specifies an action that can invoke any app on the device able to perform the action.  
-**Explicit intent** = used to launch a specific app component, such as a particular activity or service in your app.  
-We are doing this because we're going to need the component name ( ```android:name``` in intent-filter ) to identify the service in the Client app, and pass it to the explicit intent.
 
-*Note: If there are multiple Services with matching ```intent-filter```s, the Android framework will choose the one with highest priority. If multiple Services have highest priority, then a random one will be picked.* In our case, we should make sure no other services on the device have this ```intent-filter``` name.
-
-
-
+And that's it for the Server App. Feel free to install it on the device and if you want, give it a UI too and test the MathManagerImpl. All that's left now is to create the Client App and see that it can call the methods exposed in the .aidl file (which are implemented in the MathManagerImpl class).
 
 # AIDLClient
 ### 1.  The .aidl file
 
-The .aidl file must be the exact same one, it can't have any modifications. And it must have the same package name as the one on the server (in this case: ```com.asfartz.aidlserver``` )
+The .aidl file must have the same package name as the one on the server. Even though the client app's package name is `com.ansfartz.clientapp`, the .aidl file's path must be the same one as the one declared on the Server App, which is ```com.asfartz.aidlserver```.
+
+> Also, it's very important that in production use-cases (i.e. published apps) the .aidl file maintains backwards compatibility with previous versions, to avoid breaking apps that use a previous unupdated version of it.
+
+You can switch to `Project View` on the Server App, copy the `aidl` folder and paste it in the same location in the Client App. Or just follow the same steps as before for creating a new AIDL File (`app > New > AIDL > AIDL File`) but remember to rename the package to have the same one as the Server App. You should end up with this:
+
+`ClientApp\app\src\main\aidl\com\ansfartz\serverapp\IMathManager.aidl`
 
 ### 2. Creating a ServiceConnection object
 
