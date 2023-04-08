@@ -1,6 +1,6 @@
 # AIDL-Server-Client
 
-#### Google Docs: https://developer.android.com/guide/components/aidl
+#### [Android Interface Definition Language (AIDL)](https://developer.android.com/guide/components/aidl)
 
 Simple Proof-of-Concept ilustrating 2 applications (a server and a client) communicating using IPC -interprocess communication-, by using an [AIDL](https://developer.android.com/guide/components/aidl) interface.   
 
