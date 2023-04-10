@@ -188,15 +188,24 @@ We'll later be using this initialized variable ```mathManager``` to call the rem
 
 ### 3. Binding to the Service
 
-> Note: We must use an explicit Intent! To do that, you must set the Intent's action and component name:
+To bind to the Server App's service, the Service App (Where the Service is located) must be installed on the device. Then, the Client App only needs to call bind with the appropriate Intent, and the previously declared `serviceConnection`.
 
-Option 1. 
+```kotlin
+var intent = Intent("com.ansfartz.service.AIDL")
+intent.component = ComponentName("com.ansfartz.serverapp", "com.ansfartz.serverapp.MathService")
+
+bindService(intent, serviceConnection, BIND_AUTO_CREATE)
+```
+
+> Note: You must use an explicit Intent! To do that, you must set the Intent's action and component name:
+
+Option 1 - Shorter, less safe version
 ```kotlin
 var intent = Intent("com.ansfartz.service.AIDL")
 intent.component = ComponentName("com.ansfartz.serverapp", "com.ansfartz.serverapp.MathService")
 ```
 
-Option 2. 
+Option 2 - Longer, safer version, requires API level 33 to have access to `PackageManager.ResolveInfoFlags`
 ```kotlin
 private fun implicitToExplicitIntent(intent: Intent): Intent? {
     val resolveInfoList: List<ResolveInfo> = packageManager.queryIntentServices(
@@ -214,15 +223,58 @@ private fun implicitToExplicitIntent(intent: Intent): Intent? {
     explicitIntent.component = component
     return explicitIntent
 }
-...
+
+
 var intent = Intent("com.ansfartz.service.AIDL")
 intent = implicitToExplicitIntent(intent)!!
+
 ```
 
-Omitting the ```toExplicitIntent(Intent implicitIntent)``` method will cause an ```IllegalArgumentException```, because the  serviceIntent argument of bindService must be an explicit IntentI
+### 4. One last thing
 
+If you're app is targeting Android 11 (API level 30) and up, the Client App won't be able to access the Service from the Server App, because it won't be aware of the Server App being installed at all. This is caused by a privacy update starting with Android 11: apps by default no longer have full visibility over which packages are installed on the device.   
 
+To tell the system that the Client App needs to interact with the Server App, you must add the Server App's package name in the Client App's manifest file, using the `<queries> element`. Simply add the following lines in the Client App's AndroidManifest.xml, outside the <application> tag.   
 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ansfartz.clientapp">
 
-# Running the apps
-The Server app is not mandatory
+    <!-- Package visibility filtering - required for apps targeting Android 11 (API level 30) -->
+    <!-- See https://developer.android.com/training/package-visibility -->
+    <queries>
+        <!-- Specific apps you interact with, eg: -->
+        <package android:name="com.ansfartz.serverapp" />
+    </queries>
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.ClientApp">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+
+```
+
+To read more on this, see:   
+- [Package visibility filtering on Android](https://developer.android.com/training/package-visibility)
+- [Package visibility in Android 11](https://medium.com/androiddevelopers/package-visibility-in-android-11-cc857f221cd9)   
+
+____
+
+There you have it; a very simple AIDL Server-Client example. 
