@@ -277,4 +277,4 @@ To read more on this, see:
 
 ____
 
-There you have it; a very simple AIDL Server-Client example. 
+There you have it; a very simple AIDL Server-Client example. I hope this serves you as a rough starting point on what AIDL is and how to use it. Happy coding!
