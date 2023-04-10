@@ -140,7 +140,7 @@ This is a requirement for any Service. See [Declaring a service in the manifest]
 </manifest>    
 ```
 
-And that's it for the Server App. Feel free to install it on the device and if you want, give it a UI too and test the MathManagerImpl. All that's left now is to create the Client App and see that it can call the methods exposed in the .aidl file (which are implemented in the MathManagerImpl class).
+And that's it for the Server App. Feel free to install it on the device and if you want, give it a UI mockup and test the MathManagerImpl. All that's left now is to create the Client App and see that it can call the methods implemented in MathManagerImpl.
 
 # AIDLClient
 ### 1.  The .aidl file
@@ -155,47 +155,68 @@ You can switch to `Project View` on the Server App, copy the `aidl` folder and p
 
 `ClientApp\app\src\main\aidl\com\ansfartz\serverapp\IMathManager.aidl`
 
-...............
+
 ### 2. Creating a ServiceConnection object
 
-A ServiceConnection is an interface with 2 methods: ```onServiceConnected(ComponentName name, IBinder service)``` and ```onServiceDisconnected(ComponentName name)```. We'll be focusing on the first method, since we'll be using the IBinder parameter to initialize our IMathManager interface, which the client will be using for making calls to the server's MathService.
+A ServiceConnection is an interface class used for monitoring the connection-relates states of a Service. It has 2 methods that must be implemented:   
 
-```java
-private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            mathManager = IMathManager.Stub.asInterface(service);
-            Toast.makeText(MainActivity.this, "BOUND", Toast.LENGTH_SHORT).show();
+> onServiceConnected(ComponentName name, IBinder service)   
+  onServiceDisconnected(ComponentName name) 
+
+The first method will be called when the Client App succesfully connect to the Server App's Service. This is where we will initialize the IMathManager object (whose implementation the Client App doesn't know of) by using the IBinder parameter.
+
+```kotlin
+private var mathManager: IMathManager? = null
+
+private val serviceConnection: ServiceConnection = object : ServiceConnection {
+
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            mathManager = IMathManager.Stub.asInterface(service)
+            
+            isServiceConnected = true
+            updateConnectionStatusIcons(connected = true)
         }
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-
+        override fun onServiceDisconnected(name: ComponentName?) {
+            isServiceConnected = false
+            updateConnectionStatusIcons(connected = false)
         }
-    };
+
+    }
 ```
+We'll later be using this initialized variable ```mathManager``` to call the remote methods.
 
 ### 3. Binding to the Service
 
-We must use an explicit Intent, and pass the component name to it, as such:
-```java
-    Intent intent = toExplicitIntent (new Intent("com.asfartz.service.MYSERVICE"));
-    bindService(intent, serviceConnection, BIND_AUTO_CREATE);
+> Note: We must use an explicit Intent! To do that, you must set the Intent's action and component name:
 
+Option 1. 
+```kotlin
+var intent = Intent("com.ansfartz.service.AIDL")
+intent.component = ComponentName("com.ansfartz.serverapp", "com.ansfartz.serverapp.MathService")
+```
 
-public Intent toExplicitIntent(Intent implicitIntent) {
-        PackageManager pm = getPackageManager();
-        List<ResolveInfo> resolveInfoList = pm.queryIntentServices(implicitIntent, 0);
-        if (resolveInfoList == null || resolveInfoList.size() != 1) {
-            return null;
-        }
-
-        ResolveInfo serviceInfo = resolveInfoList.get(0);
-        ComponentName component = new ComponentName(serviceInfo.serviceInfo.packageName, serviceInfo.serviceInfo.name);
-        Intent explicitIntent = new Intent(implicitIntent);
-        explicitIntent.setComponent(component);
-        return explicitIntent;
+Option 2. 
+```kotlin
+private fun implicitToExplicitIntent(intent: Intent): Intent? {
+    val resolveInfoList: List<ResolveInfo> = packageManager.queryIntentServices(
+        intent,
+        PackageManager.ResolveInfoFlags.of(
+            PackageManager.MATCH_DEFAULT_ONLY.toLong()
+        )
+    )
+    if (resolveInfoList.size != 1) {
+        return intent
     }
+    val serviceInfo = resolveInfoList[0]
+    val component = ComponentName(serviceInfo.serviceInfo.packageName, serviceInfo.serviceInfo.name)
+    val explicitIntent = Intent(intent)
+    explicitIntent.component = component
+    return explicitIntent
+}
+...
+var intent = Intent("com.ansfartz.service.AIDL")
+intent = implicitToExplicitIntent(intent)!!
 ```
 
 Omitting the ```toExplicitIntent(Intent implicitIntent)``` method will cause an ```IllegalArgumentException```, because the  serviceIntent argument of bindService must be an explicit IntentI
