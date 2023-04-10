@@ -234,7 +234,7 @@ intent = implicitToExplicitIntent(intent)!!
 
 If you're app is targeting Android 11 (API level 30) and up, the Client App won't be able to access the Service from the Server App, because it won't be aware of the Server App being installed at all. This is caused by a privacy update starting with Android 11: apps by default no longer have full visibility over which packages are installed on the device.   
 
-To tell the system that the Client App needs to interact with the Server App, you must add the Server App's package name in the Client App's manifest file, using the `<queries> element`. Simply add the following lines in the Client App's AndroidManifest.xml, outside the <application> tag.   
+To tell the system that the Client App needs to interact with the Server App, you must add the Server App's package name in the Client App's manifest file, using the `<queries>` element. Simply add the following lines in the Client App's AndroidManifest.xml, outside the <application> tag.   
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
