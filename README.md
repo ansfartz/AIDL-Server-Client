@@ -4,15 +4,17 @@
 
 Simple Proof-of-Concept ilustrating 2 applications (a server and a client) communicating using IPC -interprocess communication-, by using an [AIDL](https://developer.android.com/guide/components/aidl) interface.   
 
-This is essentially a "Super Basic AIDL For Dummies" project so I can grasp AIDL concepts easier and have a quick reference for whenever needed. It's a super-simplified version of [Defining an AIDL interface](https://developer.android.com/guide/components/aidl#Defining) with less information and more step-by-step instructions. May it hopefully shed some light for other like-minded dummies.
+This is essentially a "Super Basic AIDL For Dummies" project build for myself to grasp AIDL concepts easier and have a quick reference for later. It is a over simplified version of [Defining an AIDL interface](https://developer.android.com/guide/components/aidl#Defining) with less information and more step-by-step instructions. 
 
 ___
 
-Let's assume that the Server App contains some methods which do highly sophisticated calculations. We want the Client App to communicate with the Server App so that it too may call these sophisticated methods. In order for this to happen, these steps need to be followed:   
-   1. Server App - Create an AIDL interface, whose abstract methods will be called by the Client App to communicate with the Server App. This interface needs to be made available to the Client App.
-   2. Server App - Implement the AIDL interface's methods. Essentially whatever methods the Server App wants expose, they should be added in the interface and implemented. 
-   3. Server App - Create a Service for the Client App to bind to. The return value of [onBind(): IBinder?](https://developer.android.com/reference/android/app/Service#onBind(android.content.Intent)) will be the AIDL interface's implementation from step 2.
-   4. Client App - After including the shared AIDL interface, connect to the Server App's service and use the IBinder? from [onServiceConnected(ComponentName?, IBinder?)](https://developer.android.com/reference/android/content/ServiceConnection#onServiceConnected(android.content.ComponentName,%20android.os.IBinder)) to hold a reference to the AIDL interface's remote implementation (returned in step 3).
+Let's assume that the Server App contains some methods which do calculations. We want the Client App to communicate with the Server App so that it too may call these methods with it's own parameter. In order to do that, the Server has to expose these methods in the form of an interface (or API) that the client must know about. This is where AIDL comes in handy. Using an AIDL file, the 2 apps (or rather **processes**) can agree upon the API they'll use to communicate.
+
+We'll essentially follow these steps:   
+   1. Server App - Create an AIDL interface. The interface's abstract methods will be called by the Client App to communicate with the Server App. This interface needs to be made available to the Client App.
+   2. Server App - Implement the AIDL interface's methods in a new class. Whatever methods the Server App wants to expose, they should be added in the AIDL interface and then implemented accordingly. 
+   3. Server App - Create a Service for the Client App to bind to. The method [onBind(intent: Intent?): IBinder](https://developer.android.com/reference/android/app/Service#onBind(android.content.Intent)) will return the implementation of the AIDL interface created in step 2.
+   4. Client App - After including the shared AIDL interface in the Client App, connect to the Server App's service and use the IBinder? received from [onServiceConnected(ComponentName?, IBinder?)](https://developer.android.com/reference/android/content/ServiceConnection#onServiceConnected(android.content.ComponentName,%20android.os.IBinder)) to hold a reference to the AIDL interface's implementation (returned in step 3).
 
 ___
 
